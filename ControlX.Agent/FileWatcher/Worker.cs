@@ -1,0 +1,120 @@
+using ControlX.Flow;
+using ControlX.Flow.Core;
+
+namespace ControlX.Agent.FileWatcher;
+
+public class Worker : BackgroundService
+{
+    private readonly ILogger<Worker> _logger;
+    private readonly IConfiguration _configuration;
+    private readonly IList<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
+
+    public Worker(ILogger<Worker> logger, IConfiguration configuration)
+    {
+        _logger = logger;
+        _configuration = configuration;
+
+        InitFileWatchers();
+    }
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        while (!stoppingToken.IsCancellationRequested)
+        {
+            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+            await Task.Delay(1000, stoppingToken);
+        }
+    }
+
+    public void InitFileWatchers()
+    {
+        var config = new Config();
+        _configuration.GetSection("FileWatcher").Bind(config);
+
+        if(config.Worker != null)
+            foreach(var worker in config.Worker)
+                _watchers.Add(
+                    InitFileWatcher(worker)
+                );
+    }
+
+    public FileSystemWatcher InitFileWatcher(WorkerConfig config)
+    {
+        if (config.Path == null)
+            throw new NullReferenceException();
+
+        var watcher = new FileSystemWatcher(config.Path);
+
+        watcher.NotifyFilter = NotifyFilters.Attributes
+                                | NotifyFilters.CreationTime
+                                | NotifyFilters.DirectoryName
+                                | NotifyFilters.FileName
+                                | NotifyFilters.LastAccess
+                                | NotifyFilters.LastWrite
+                                | NotifyFilters.Security
+                                | NotifyFilters.Size;
+
+        watcher.Created += OnCreated;
+        watcher.Changed += OnChanged;
+            
+        watcher.Error += OnError;
+
+        watcher.Filter = "*.txt";
+        watcher.IncludeSubdirectories = false;
+        watcher.EnableRaisingEvents = true;
+
+        return watcher;
+    }
+
+    private void OnCreated(object sender, FileSystemEventArgs e)
+    {
+        string value = $"Created: {e.FullPath}";
+        Console.WriteLine(value);
+
+        // create flow instance
+        Automate.Execute(new IAction[]
+        {
+            new TestAction
+            {
+                Path = "$FileSystemEventArgs.FullPath"
+            },
+            new TestAction
+            {
+                Path = "Hallo Welt!"
+            },
+            new FTPAction
+            {
+                Host = "192.168.1.214",
+                Port = 22,
+                Path = "/",
+                UserName = "tester",
+                Password = "password",
+                SourceFile = "$FileSystemEventArgs.FullPath"
+            }
+        }, sender, e).Wait();
+    }
+
+    private static void OnChanged(object sender, FileSystemEventArgs e)
+    {
+        if (e.ChangeType != WatcherChangeTypes.Changed)
+        {
+            return;
+        }
+        Console.WriteLine($"Changed: {e.FullPath}");
+    }
+
+    private static void OnError(object sender, ErrorEventArgs e) =>
+        PrintException(e.GetException());
+
+    private static void PrintException(Exception? ex)
+    {
+        if (ex != null)
+        {
+            Console.WriteLine($"Message: {ex.Message}");
+            Console.WriteLine("Stacktrace:");
+            Console.WriteLine(ex.StackTrace);
+            Console.WriteLine();
+            PrintException(ex.InnerException);
+        }
+    }
+}
