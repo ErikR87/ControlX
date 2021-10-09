@@ -59,8 +59,12 @@ public class Worker : BackgroundService
             
         watcher.Error += OnError;
 
-        watcher.Filter = "*.txt";
-        watcher.IncludeSubdirectories = false;
+        if(config.Filter != null)
+            watcher.Filter = config.Filter;
+
+        if(config.IncludeSubdirectories.HasValue)
+            watcher.IncludeSubdirectories = config.IncludeSubdirectories.Value;
+
         watcher.EnableRaisingEvents = true;
 
         return watcher;

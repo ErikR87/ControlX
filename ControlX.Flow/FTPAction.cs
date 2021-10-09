@@ -35,8 +35,9 @@ namespace ControlX.Flow.Core
 
                 using (var file = new FileStream(SourceFile, FileMode.Open))
                 {
+                    var fileName = SourceFile.Split('\\').Last();
                     client.Connect();
-                    client.UploadFile(file, Path + "test.txt", null);
+                    client.UploadFile(file, Path + fileName, null);
                 } 
             }
 

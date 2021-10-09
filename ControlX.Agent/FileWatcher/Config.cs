@@ -8,4 +8,6 @@ public class Config
 public class WorkerConfig
 {
     public string? Path { get; set; }
+    public string? Filter { get; set; }
+    public bool? IncludeSubdirectories { get; set; }
 }
