@@ -88,7 +88,7 @@ public class Worker : BackgroundService
             },
             new FTPAction
             {
-                Host = "192.168.1.214",
+                Host = "127.0.0.1",
                 Port = 22,
                 Path = "/",
                 UserName = "tester",
