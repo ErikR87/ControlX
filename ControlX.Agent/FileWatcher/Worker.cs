@@ -1,5 +1,8 @@
 using ControlX.Flow;
 using ControlX.Flow.Core;
+using ControlX.Hub.Contract;
+using Grpc.Net.Client;
+using ProtoBuf.Grpc.Client;
 
 namespace ControlX.Agent.FileWatcher;
 
@@ -19,6 +22,12 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        using var channel = GrpcChannel.ForAddress("https://localhost:8000");
+        var service = channel.CreateGrpcService<IGreeterService>();
+        var response = await service.SayHelloAsync(new HelloRequest { Name = "Agent" });
+
+        Console.WriteLine($"from grpc: {response.Message}");
+
         while (!stoppingToken.IsCancellationRequested)
         {
             _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
