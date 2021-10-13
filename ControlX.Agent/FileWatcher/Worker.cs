@@ -22,17 +22,23 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var channel = GrpcChannel.ForAddress("https://localhost:8000");
-        var service = channel.CreateGrpcService<IGreeterService>();
-        var response = await service.SayHelloAsync(new HelloRequest { Name = "Agent" });
-
-        Console.WriteLine($"from grpc: {response.Message}");
-
-        while (!stoppingToken.IsCancellationRequested)
+        try
         {
-            _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-            await Task.Delay(1000, stoppingToken);
+            using var channel = GrpcChannel.ForAddress("https://localhost:8000");
+            var service = channel.CreateGrpcService<IGreeterService>();
+            var response = await service.SayHelloAsync(new HelloRequest { Name = "Agent" });
+            Console.WriteLine($"from grpc: {response.Message}");
+
+            while (!stoppingToken.IsCancellationRequested)
+            {
+                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                await Task.Delay(1000, stoppingToken);
+            }
+        } catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex.StackTrace);
         }
+
     }
 
     public void InitFileWatchers()
@@ -63,7 +69,7 @@ public class Worker : BackgroundService
                                 | NotifyFilters.Security
                                 | NotifyFilters.Size;
 
-        watcher.Created += OnCreated;
+        watcher.Created += (sender, e) => OnCreated(sender, e, config);
         watcher.Changed += OnChanged;
             
         watcher.Error += OnError;
@@ -79,32 +85,21 @@ public class Worker : BackgroundService
         return watcher;
     }
 
-    private void OnCreated(object sender, FileSystemEventArgs e)
+    private void OnCreated(object sender, FileSystemEventArgs e, WorkerConfig config)
     {
         string value = $"Created: {e.FullPath}";
         Console.WriteLine(value);
 
-        // create flow instance
-        Automate.Execute(new IAction[]
+        // Execute flow instance
+        try
         {
-            new TestAction
-            {
-                Path = "$FileSystemEventArgs.FullPath"
-            },
-            new TestAction
-            {
-                Path = "Hallo Welt!"
-            },
-            new FTPAction
-            {
-                Host = "127.0.0.1",
-                Port = 22,
-                Path = "/",
-                UserName = "tester",
-                Password = "password",
-                SourceFile = "$FileSystemEventArgs.FullPath"
-            }
-        }, sender, e).Wait();
+            Automate.Execute(config.Flow, sender, e).Wait();
+        } 
+        catch (Exception ex)
+        {
+            _logger.LogError(ex.Message, ex.StackTrace);
+        }
+        
     }
 
     private static void OnChanged(object sender, FileSystemEventArgs e)

@@ -8,6 +8,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="flow.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="flow.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0-rc.1.21451.13" />
     <PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />

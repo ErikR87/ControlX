@@ -1,12 +1,17 @@
 ﻿using ControlX.Flow.Contract;
+using ControlX.Flow.Core.Extensions;
 using ControlX.Utilities;
+using Dahomey.Json.Attributes;
+using System.Text.Json;
 
 namespace ControlX.Flow
 {
+    [JsonDiscriminator(nameof(Automate))]
     public class Automate : IAutomate
     {
         private Dictionary<string, object> _data = new Dictionary<string, object>();
-        public int Step = 0;
+        private int _step = 0;
+
         public IAction[]? Actions {  get; set; }
 
         public async static Task Execute(Automate automate, params object[] vars)
@@ -41,7 +46,7 @@ namespace ControlX.Flow
                 
                 // run action
                 await action.RunAsync();
-                automate.Step++;
+                automate._step++;
             } 
         }
 
@@ -53,6 +58,13 @@ namespace ControlX.Flow
                 action.Automate = flow;
             flow.Actions = actions;
             await Execute(flow, vars);
+        }
+
+        public async static Task Execute(string file, params object[] vars)
+        {
+            var flowJson = File.ReadAllText(file);
+            var tmpAutomate = FromJson(flowJson);
+            await Execute(tmpAutomate.Actions, vars);
         }
 
         public void SetVariable(IDictionary<string, object> d)
@@ -72,5 +84,11 @@ namespace ControlX.Flow
             => !variable.StartsWith('$') && typeof(T) == typeof(string) ? 
                 (T)(variable as object) : 
                 (T)_data[variable.Substring(1)];
+
+
+        public static IAutomate FromJson(string json)
+        {
+            return JsonSerializer.Deserialize<Automate>(json, AutomateExtension.JsonSerializerOptions);
+        }
     }
 }

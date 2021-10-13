@@ -10,4 +10,5 @@ public class WorkerConfig
     public string? Path { get; set; }
     public string? Filter { get; set; }
     public bool? IncludeSubdirectories { get; set; }
+    public string? Flow { get; set; }
 }

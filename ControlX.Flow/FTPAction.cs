@@ -1,12 +1,15 @@
 ﻿using ControlX.Flow.Contract;
 using Renci.SshNet;
 using System.Security;
+using Dahomey.Json;
+using Dahomey.Json.Attributes;
 
 namespace ControlX.Flow.Core
 {
+    [JsonDiscriminator(nameof(FTPAction))]
     public class FTPAction : IFTPAction
     {
-        public string Name => "FTP File Transfer";
+        public string Name => GetType().FullName;
         public string Host {  get; set; }
         public int Port { get; set; }
         public string Path { get; set; }

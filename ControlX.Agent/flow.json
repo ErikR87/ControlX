@@ -1,0 +1,29 @@
+{
+  "_t": "Automate",
+  "Actions": [
+    {
+      "_t": "TestAction",
+      "Name": "ControlX.Flow.TestAction",
+      "Automate": null,
+      "Path": "$FileSystemEventArgs.FullPath"
+    },
+    {
+      "_t": "TestAction",
+      "Name": "ControlX.Flow.TestAction",
+      "Automate": null,
+      "Path": "Hallo Welt!"
+    },
+    {
+      "_t": "FTPAction",
+      "Name": "ControlX.Flow.Core.FTPAction",
+      "Host": "127.0.0.1",
+      "Port": 22,
+      "Path": "/",
+      "UserName": "tester",
+      "Password": "password",
+      "SourceFile": "$FileSystemEventArgs.FullPath",
+      "Automate": null
+    }
+  ],
+  "Step": 0
+}

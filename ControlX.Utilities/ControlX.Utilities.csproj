@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ControlX.Flow.Contract\ControlX.Flow.Contract.csproj" />
+  </ItemGroup>
+
 </Project>
