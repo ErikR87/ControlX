@@ -1,8 +1,4 @@
-using ControlX.Flow;
 using ControlX.Flow.Core;
-using ControlX.Hub.Contract;
-using Grpc.Net.Client;
-using ProtoBuf.Grpc.Client;
 
 namespace ControlX.Agent.FileWatcher;
 
@@ -10,25 +6,22 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IConfiguration _configuration;
+    private readonly FileWatcherConfig _fileWatcherConfig;
     private readonly IList<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
 
     public Worker(ILogger<Worker> logger, IConfiguration configuration)
     {
         _logger = logger;
         _configuration = configuration;
-
-        InitFileWatchers();
+        _fileWatcherConfig = new FileWatcherConfig();
+        _configuration.GetSection("FileWatcher").Bind(_fileWatcherConfig);
+        InitFileWatchers(_fileWatcherConfig);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            using var channel = GrpcChannel.ForAddress("https://localhost:8000");
-            var service = channel.CreateGrpcService<IGreeterService>();
-            var response = await service.SayHelloAsync(new HelloRequest { Name = "Agent" });
-            Console.WriteLine($"from grpc: {response.Message}");
-
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
@@ -41,11 +34,8 @@ public class Worker : BackgroundService
 
     }
 
-    public void InitFileWatchers()
+    public void InitFileWatchers(FileWatcherConfig config)
     {
-        var config = new Config();
-        _configuration.GetSection("FileWatcher").Bind(config);
-
         if(config.Worker != null)
             foreach(var worker in config.Worker)
                 _watchers.Add(

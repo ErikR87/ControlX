@@ -9,6 +9,7 @@ namespace ControlX.Flow.Core
     [JsonDiscriminator(nameof(FTPAction))]
     public class FTPAction : IFTPAction
     {
+        public string Name => GetType().FullName;
         public string Host {  get; set; }
         public int Port { get; set; }
         public string Path { get; set; }

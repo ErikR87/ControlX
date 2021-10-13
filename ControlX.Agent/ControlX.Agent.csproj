@@ -27,4 +27,6 @@
     <ProjectReference Include="..\ControlX.Flow\ControlX.Flow.Core.csproj" />
     <ProjectReference Include="..\ControlX.Hub.Contract\ControlX.Hub.Contract.csproj" />
   </ItemGroup>
+
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
 </Project>

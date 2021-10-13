@@ -1,10 +1,10 @@
 ﻿using ControlX.Flow.Contract;
-using ControlX.Flow.Core.Extensions;
+using ControlX.Flow.Core;
 using ControlX.Utilities;
 using Dahomey.Json.Attributes;
 using System.Text.Json;
 
-namespace ControlX.Flow
+namespace ControlX.Flow.Core
 {
     [JsonDiscriminator(nameof(Automate))]
     public class Automate : IAutomate
@@ -88,7 +88,7 @@ namespace ControlX.Flow
 
         public static IAutomate FromJson(string json)
         {
-            return JsonSerializer.Deserialize<Automate>(json, AutomateExtension.JsonSerializerOptions);
+            return JsonSerializer.Deserialize<Automate>(json, JsonConverterHelper.GetJsonSerializerOptions());
         }
     }
 }

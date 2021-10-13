@@ -1,6 +1,11 @@
-﻿namespace ControlX.Agent.FileWatcher;
+﻿namespace ControlX.Agent;
 
-public class Config
+public class HubConfig
+{
+    public string? Url { get; set; }
+}
+
+public class FileWatcherConfig
 {
     public WorkerConfig[]? Worker { get; set; }
 }

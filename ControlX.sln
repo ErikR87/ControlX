@@ -15,7 +15,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlX.Hub", "ControlX.Hu
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlX.Hub.Contract", "ControlX.Hub.Contract\ControlX.Hub.Contract.csproj", "{E82A7D56-F633-4B1E-BF57-3727D569764D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlX.CLI", "ControlX.CLI\ControlX.CLI.csproj", "{5CE22ED5-F019-4E9A-9C93-A51FDBAD2B5A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlX.CLI", "ControlX.CLI\ControlX.CLI.csproj", "{5CE22ED5-F019-4E9A-9C93-A51FDBAD2B5A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
