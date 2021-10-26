@@ -1,4 +1,5 @@
 using ControlX.Flow.Core;
+using Microsoft.ApplicationInsights;
 
 namespace ControlX.Agent.FileWatcher;
 
@@ -6,13 +7,15 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IConfiguration _configuration;
+    private TelemetryClient _telemetryClient;
     private readonly FileWatcherConfig _fileWatcherConfig;
     private readonly IList<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration)
+    public Worker(ILogger<Worker> logger, IConfiguration configuration, TelemetryClient tc)
     {
         _logger = logger;
         _configuration = configuration;
+        _telemetryClient = tc;
         _fileWatcherConfig = new FileWatcherConfig();
         _configuration.GetSection("FileWatcher").Bind(_fileWatcherConfig);
         InitFileWatchers(_fileWatcherConfig);
@@ -20,11 +23,11 @@ public class Worker : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _telemetryClient.TrackEvent("Testevent");
         try
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
                 await Task.Delay(1000, stoppingToken);
             }
         } catch (Exception ex)

@@ -8,9 +8,9 @@
       "Port": 22,
       "Path": "/",
       "UserName": "tester",
-      "Password": "password",
-      "SourceFile": "$FileSystemEventArgs.FullPath",
-      "Automate": null
+      "PrivateKeyFile": "C:\\Tools\\RebexTinySftpServer-Binaries-Latest\\Keys\\private.ppk",
+      "FingerPrint": "35:3E:24:8C:40:F5:70:09:2C:50:59:A9:AD:12:F9:46",
+      "SourceFile": "$FileSystemEventArgs.FullPath"
     },
     {
       "_t": "MoveFileAction",
