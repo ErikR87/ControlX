@@ -1,7 +1,7 @@
 ﻿using ControlX.Flow.Contract;
-using ControlX.Flow.Core;
 using ControlX.Utilities;
 using Dahomey.Json.Attributes;
+using Microsoft.Extensions.Logging;
 using System.Text.Json;
 
 namespace ControlX.Flow.Core
@@ -14,7 +14,7 @@ namespace ControlX.Flow.Core
 
         public IAction[]? Actions {  get; set; }
 
-        public async static Task Execute(Automate automate, params object[] vars)
+        public async static Task Execute(Automate automate, ILogger logger, params object[] vars)
         {
             if(automate.Actions == null)
                 throw new ArgumentNullException(nameof(automate.Actions));
@@ -44,27 +44,35 @@ namespace ControlX.Flow.Core
                             prop.SetValue(action, newVal);
                     }
                 
+                //assign logger
+                action.SetLogger(logger);
+
                 // run action
                 await action.RunAsync();
                 automate._step++;
-            } 
+            }
+
+            logger.LogInformation("Flow finished");
         }
 
-        public async static Task Execute(IAction[] actions, params object[] vars)
+        public async static Task Execute(IAction[] actions, ILogger logger, params object[] vars)
         {
             // create flow instance
             var flow = new Automate();
+            
             foreach(var action in actions)
                 action.Automate = flow;
             flow.Actions = actions;
-            await Execute(flow, vars);
+            await Execute(flow, logger, vars);
         }
 
-        public async static Task Execute(string file, params object[] vars)
+        public async static Task Execute(string file, ILogger logger, params object[] vars)
         {
+            logger.LogInformation($"Flow started: {file}");
+
             var flowJson = File.ReadAllText(file);
             var tmpAutomate = FromJson(flowJson);
-            await Execute(tmpAutomate.Actions, vars);
+            await Execute(tmpAutomate.Actions, logger, vars);
         }
 
         public void SetVariable(IDictionary<string, object> d)

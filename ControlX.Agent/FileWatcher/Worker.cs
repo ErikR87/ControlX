@@ -7,23 +7,20 @@ public class Worker : BackgroundService
 {
     private readonly ILogger<Worker> _logger;
     private readonly IConfiguration _configuration;
-    private TelemetryClient _telemetryClient;
     private readonly FileWatcherConfig _fileWatcherConfig;
     private readonly IList<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration, TelemetryClient tc)
+    public Worker(ILogger<Worker> logger, IConfiguration configuration)
     {
         _logger = logger;
         _configuration = configuration;
-        _telemetryClient = tc;
         _fileWatcherConfig = new FileWatcherConfig();
         _configuration.GetSection("FileWatcher").Bind(_fileWatcherConfig);
         InitFileWatchers(_fileWatcherConfig);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
-        _telemetryClient.TrackEvent("Testevent");
+    {   
         try
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -32,13 +29,14 @@ public class Worker : BackgroundService
             }
         } catch (Exception ex)
         {
-            _logger.LogError(ex.Message, ex.StackTrace);
+            _logger.LogCritical(ex.Message, ex.StackTrace);
         }
 
     }
 
     public void InitFileWatchers(FileWatcherConfig config)
     {
+        
         if(config.Worker != null)
             foreach(var worker in config.Worker)
                 _watchers.Add(
@@ -80,13 +78,12 @@ public class Worker : BackgroundService
 
     private void OnCreated(object sender, FileSystemEventArgs e, WorkerConfig config)
     {
-        string value = $"Created: {e.FullPath}";
-        Console.WriteLine(value);
+        _logger.LogInformation($"Event file created: {e.FullPath}");
 
         // Execute flow instance
         try
         {
-            Automate.Execute(config.Flow, sender, e).Wait();
+            Automate.Execute(config.Flow, _logger, sender, e).Wait();
         } 
         catch (Exception ex)
         {

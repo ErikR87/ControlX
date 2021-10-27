@@ -1,10 +1,11 @@
 ﻿using ControlX.Flow.Contract;
 using Dahomey.Json.Attributes;
+using Microsoft.Extensions.Logging;
 
 namespace ControlX.Flow.Core
 {
     [JsonDiscriminator(nameof(MoveFileAction))]
-    public class MoveFileAction : IMoveFileAction
+    public class MoveFileAction : FlowAction<MoveFileAction>, IMoveFileAction
     {
         public string SourceFile { get; set; }
         public string DestinationSubFolder { get; set; }
@@ -12,8 +13,10 @@ namespace ControlX.Flow.Core
         public bool? Overwrite { get; set; }
         public string DestinationFileName { get; set; }
 
-        public Task RunAsync()
+        public async Task RunAsync()
         {
+            await base.RunAsync();
+
             if (SourceFile == null)
                 throw new ArgumentNullException("File");
 
@@ -27,7 +30,7 @@ namespace ControlX.Flow.Core
 
             File.Move(SourceFile, $"{destinationPath}\\{DestinationFileName}", Overwrite.HasValue ? Overwrite.Value : false);
 
-            return Task.CompletedTask;
+            _logger.LogInformation($"MoveFileAction: File {SourceFile} moved to {destinationPath}");
         }
     }
 }

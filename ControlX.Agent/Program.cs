@@ -3,7 +3,7 @@ IHost host = Host.CreateDefaultBuilder(args)
     {
         services.AddLogging(builder =>
         {
-            builder.AddApplicationInsights();
+            builder.AddApplicationInsights().AddSimpleConsole();
         });
         services.AddHostedService<ControlX.Agent.HubClient.HubClient>();
         services.AddHostedService<ControlX.Agent.FileWatcher.Worker>();

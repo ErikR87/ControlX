@@ -17,7 +17,7 @@ var automate = new Automate
             {
                 Path = "Hallo Welt!"
             },
-            new FTPAction(null)
+            new FTPAction()
             {
                 Host = "127.0.0.1",
                 Port = 22,

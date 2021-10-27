@@ -1,15 +1,12 @@
 ﻿using ControlX.Flow.Contract;
 using Renci.SshNet;
 using Dahomey.Json.Attributes;
-using System.Text;
-using ControlX.Utilities;
-using Microsoft.ApplicationInsights;
 using Microsoft.Extensions.Logging;
 
 namespace ControlX.Flow.Core;
 
 [JsonDiscriminator(nameof(FTPAction))]
-public class FTPAction : IFTPAction
+public class FTPAction : FlowAction<FTPAction>, IFTPAction
 {
     public string Host {  get; set; }
     public int Port { get; set; }
@@ -22,63 +19,59 @@ public class FTPAction : IFTPAction
     public string SourceFile { get; set; }
     public IAutomate Automate { get; set; }
 
-    private readonly ILogger<FTPAction> _logger;
-
-    public FTPAction(ILogger<FTPAction> logger)
+    public async Task RunAsync()
     {
-        _logger = logger;
-    }
+        await base.RunAsync();
 
-    public Task RunAsync()
-    {
-        _logger.LogInformation("Run FTPAction...");
-
-        var authentificationMethods = new List<AuthenticationMethod>();
-
-        if (Password != null)
-            authentificationMethods.Add(
-                new PasswordAuthenticationMethod(
-                UserName,
-                Password
-            ));
-
-        if (PrivateKeyFile != null)
-            authentificationMethods.Add(
-                new PrivateKeyAuthenticationMethod(
-                    UserName,
-                    new PrivateKeyFile(PrivateKeyFile, PassPhrase)
-            ));
-
-
-        var connectionInfo = new ConnectionInfo(
-            Host,
-            UserName,
-            authentificationMethods.ToArray()
-        );
-
-        using (var client = new SftpClient(connectionInfo))
+        using (_logger.BeginScope(this))
         {
-            client.HostKeyReceived += (sender, e) =>
+            var authentificationMethods = new List<AuthenticationMethod>();
+
+            if (Password != null)
+                authentificationMethods.Add(
+                    new PasswordAuthenticationMethod(
+                    UserName,
+                    Password
+                ));
+
+            if (PrivateKeyFile != null)
+                authentificationMethods.Add(
+                    new PrivateKeyAuthenticationMethod(
+                        UserName,
+                        new PrivateKeyFile(PrivateKeyFile, PassPhrase)
+                ));
+
+
+            var connectionInfo = new ConnectionInfo(
+                Host,
+                UserName,
+                authentificationMethods.ToArray()
+            );
+
+            using (var client = new SftpClient(connectionInfo))
             {
-                if(!string.IsNullOrWhiteSpace(FingerPrint))
+                client.HostKeyReceived += (sender, e) =>
                 {
-                    if (BitConverter.ToString(e.FingerPrint).Replace('-', ':') == FingerPrint)
-                        e.CanTrust = true;
+                    if (!string.IsNullOrWhiteSpace(FingerPrint))
+                    {
+                        if (BitConverter.ToString(e.FingerPrint).Replace('-', ':') == FingerPrint)
+                            e.CanTrust = true;
+                        else
+                            e.CanTrust = false;
+                    }
                     else
-                        e.CanTrust = false;
+                        e.CanTrust = true;
+                };
+
+                using (var file = new FileStream(SourceFile, FileMode.Open))
+                {
+                    var fileName = SourceFile.Split('\\').Last();
+                    client.Connect();
+                    client.UploadFile(file, Path + fileName, null);
                 }
-                else
-                    e.CanTrust = true;
-            };
+            }
 
-            using (var file = new FileStream(SourceFile, FileMode.Open))
-            {
-                var fileName = SourceFile.Split('\\').Last();
-                client.Connect();
-                client.UploadFile(file, Path + fileName, null);
-            } 
-        }
-
-        return Task.CompletedTask;
+            _logger.LogInformation($"FTP-Action: File {SourceFile} transferd to {Host} path {Path}");
+        }   
     }
 }
