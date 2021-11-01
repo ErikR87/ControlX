@@ -10,6 +10,7 @@
   <ItemGroup>
     <ProjectReference Include="..\ControlX.Flow.Contract\ControlX.Flow.Contract.csproj" />
     <ProjectReference Include="..\ControlX.Flow\ControlX.Flow.Core.csproj" />
+    <ProjectReference Include="..\ControlX.Insights\ControlX.Insights.csproj" />
     <ProjectReference Include="..\ControlX.Utilities\ControlX.Utilities.csproj" />
   </ItemGroup>
 

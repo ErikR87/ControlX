@@ -17,7 +17,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlX.Hub.Contract", "Co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlX.CLI", "ControlX.CLI\ControlX.CLI.csproj", "{5CE22ED5-F019-4E9A-9C93-A51FDBAD2B5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlX.Web", "ControlX.Web\ControlX.Web.csproj", "{FAC6ECBB-9498-47E7-A1B5-96E6E805CEF8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ControlX.Web", "ControlX.Web\ControlX.Web.csproj", "{FAC6ECBB-9498-47E7-A1B5-96E6E805CEF8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ControlX.Insights", "ControlX.Insights\ControlX.Insights.csproj", "{F24C23DC-F8EB-4E22-8DD1-3D3A2BE230CB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -57,6 +59,10 @@ Global
 		{FAC6ECBB-9498-47E7-A1B5-96E6E805CEF8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FAC6ECBB-9498-47E7-A1B5-96E6E805CEF8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FAC6ECBB-9498-47E7-A1B5-96E6E805CEF8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F24C23DC-F8EB-4E22-8DD1-3D3A2BE230CB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F24C23DC-F8EB-4E22-8DD1-3D3A2BE230CB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F24C23DC-F8EB-4E22-8DD1-3D3A2BE230CB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F24C23DC-F8EB-4E22-8DD1-3D3A2BE230CB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -13,6 +13,18 @@
       "SourceFile": "$FileSystemEventArgs.FullPath"
     },
     {
+      "_t": "FTPAction",
+      "Name": "ControlX.Flow.Core.FTPAction",
+      "Host": "127.0.0.1",
+      "Port": 22,
+      "Path": "/test.txt",
+      "UserName": "tester",
+      "PasswordFile": "C:\\temp\\password.txt",
+      "FingerPrint": "35:3E:24:8C:40:F5:70:09:2C:50:59:A9:AD:12:F9:46",
+      "FTPMethod": 1,
+      "DownloadDestination": "C:\\Temp\\"
+    },
+    {
       "_t": "MoveFileAction",
       "SourceFile": "$FileSystemEventArgs.FullPath",
       "DestinationSubFolder": "Done",
