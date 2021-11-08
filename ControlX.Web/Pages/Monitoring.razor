@@ -1,7 +1,48 @@
 ﻿@page "/Monitor"
+@using ControlX.Insights.Model
+@inject HttpClient Http
 
 <h3>Monitoring</h3>
 
-@code {
+<table class="table">
+    <thead>
+        <th>Agent</th>
+        <th>Timestamp</th>
+        <th>Message</th>
+    </thead>
+    <tbody>
+        @foreach(var log in logs)
+        {
+            var c = "";
 
+            switch (log.SeverityLevel)
+            {
+                case 1:
+                    c = "table-success";
+                    break;
+                case 2:
+                    c = "table-warning";
+                    break;
+                case 3:
+                    c = "table-danger";
+                    break;
+            }
+
+            <tr class=@c>
+                <td>@log.AppRoleInstance</td>
+                <td>@log.TimeGenerated.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                <td>@log.Message</td>
+            </tr>
+        }
+    </tbody>
+    
+</table>
+
+@code {
+    private LogObject[]? logs;
+
+    protected async override Task OnInitializedAsync()
+    {
+        logs = await Http.GetFromJsonAsync<LogObject[]>("api/Insights");
+    }
 }
