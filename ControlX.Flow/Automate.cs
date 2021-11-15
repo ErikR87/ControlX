@@ -1,4 +1,5 @@
 ﻿using ControlX.Flow.Contract;
+using ControlX.Hub.Contract;
 using ControlX.Utilities;
 using Dahomey.Json.Attributes;
 using Microsoft.Extensions.Logging;
@@ -14,7 +15,7 @@ namespace ControlX.Flow.Core
 
         public IAction[]? Actions {  get; set; }
 
-        public async static Task Execute(Automate automate, ILogger logger, params object[] vars)
+        public async static Task Execute(Automate automate, ILogger logger, IHubService hubService, params object[] vars)
         {
             if(automate.Actions == null)
                 throw new ArgumentNullException(nameof(automate.Actions));
@@ -47,6 +48,9 @@ namespace ControlX.Flow.Core
                 //assign logger
                 action.SetLogger(logger);
 
+                //assign services
+                action.SetServices(hubService);
+
                 // run action
                 await action.RunAsync();
                 automate._step++;
@@ -55,7 +59,7 @@ namespace ControlX.Flow.Core
             logger.LogInformation("Flow finished");
         }
 
-        public async static Task Execute(IAction[] actions, ILogger logger, params object[] vars)
+        public async static Task Execute(IAction[] actions, ILogger logger, IHubService hubService, params object[] vars)
         {
             // create flow instance
             var flow = new Automate();
@@ -63,16 +67,16 @@ namespace ControlX.Flow.Core
             foreach(var action in actions)
                 action.Automate = flow;
             flow.Actions = actions;
-            await Execute(flow, logger, vars);
+            await Execute(flow, logger, hubService, vars);
         }
 
-        public async static Task Execute(string file, ILogger logger, params object[] vars)
+        public async static Task Execute(string file, ILogger logger, IHubService hubService, params object[] vars)
         {
             logger.LogInformation($"Flow started: {file}");
 
             var flowJson = File.ReadAllText(file);
             var tmpAutomate = FromJson(flowJson);
-            await Execute(tmpAutomate.Actions, logger, vars);
+            await Execute(tmpAutomate.Actions, logger, hubService, vars);
         }
 
         public void SetVariable(IDictionary<string, object> d)

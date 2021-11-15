@@ -1,3 +1,7 @@
+
+using ControlX.Hub.Contract;
+using ProtoBuf.Grpc.ClientFactory;
+
 IHost host = Host.CreateDefaultBuilder(args)
     .ConfigureServices(services =>
     {
@@ -5,8 +9,13 @@ IHost host = Host.CreateDefaultBuilder(args)
         {
             builder.AddApplicationInsights().AddSimpleConsole();
         });
+        services.AddCodeFirstGrpcClient<IHubService>(o =>
+        {
+            o.Address = new Uri("https://localhost:8000");
+        });
         services.AddHostedService<ControlX.Agent.HubClient.HubClient>();
-        services.AddHostedService<ControlX.Agent.FileWatcher.Worker>();
+        services.AddHostedService<ControlX.Agent.FileWatcher.FileWatcherWorker>();
+        services.AddHostedService<ControlX.Agent.FTPWatcher.FTPWorker>();
         services.AddApplicationInsightsTelemetryWorkerService();
     })
     .Build();

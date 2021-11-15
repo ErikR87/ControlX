@@ -3,6 +3,10 @@ using Renci.SshNet;
 using Dahomey.Json.Attributes;
 using Microsoft.Extensions.Logging;
 using Renci.SshNet.Common;
+using System.Threading.Tasks;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace ControlX.Flow.Core;
 
@@ -28,10 +32,10 @@ public class FTPAction : FlowAction<FTPAction>, IFTPAction
 
     public async Task RunAsync()
     {
-        await base.RunAsync();
-
         using (_logger.BeginScope(this))
         {
+            await base.RunAsync();
+
             #region authentification
             var authentificationMethods = new List<AuthenticationMethod>();
 

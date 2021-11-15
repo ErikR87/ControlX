@@ -8,8 +8,8 @@
 
   <ItemGroup>
     <PackageReference Include="Dahomey.Json" Version="1.11.3" />
-    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.18.0" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="5.0.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights" Version="2.19.0" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="6.0.0" />
     <PackageReference Include="SSH.NET" Version="2020.0.1" />
   </ItemGroup>
 

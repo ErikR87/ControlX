@@ -20,7 +20,10 @@ public class TestAction : FlowAction<TestAction>, ITestAction
 
     public Task RunAsync()
     {
-        _logger.LogInformation($"Path {Automate.GetVariable<string>(Path)}");
-        return Task.CompletedTask;
+        using (_logger.BeginScope(this))
+        {
+            _logger.LogInformation($"Path {Automate.GetVariable<string>(Path)}");
+            return Task.CompletedTask;
+        }
     }
 }

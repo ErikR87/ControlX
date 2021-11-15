@@ -4,6 +4,7 @@ using Azure.Monitor.Query.Models;
 using ControlX.Insights.Model;
 using ControlX.Insights.Models;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 
 namespace ControlX.Insights;
 
@@ -33,14 +34,22 @@ public class LogService
         var result = new List<LogObject>();
 
         foreach (var row in table.Rows)
+        {
+            var bin = (BinaryData)row["Properties"];
+            var json = bin.ToString();
+            var props = JsonSerializer.Deserialize<LogObjectProps>(json);
+
+
             result.Add(new LogObject
             {
                 TimeGenerated = (DateTimeOffset)row["TimeGenerated"],
                 Message = (string)row["Message"],
                 SeverityLevel = (int)row["SeverityLevel"],
                 OperationName = (string)row["OperationName"],
-                AppRoleInstance = (string)row["AppRoleInstance"]
+                AppRoleInstance = (string)row["AppRoleInstance"],
+                Scope = props.Scope
             });
+        }
 
         return result;
     }

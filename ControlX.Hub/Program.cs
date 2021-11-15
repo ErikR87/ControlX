@@ -40,6 +40,6 @@ app.MapControllers();
 app.MapFallbackToFile("index.html");
 
 // Configure the HTTP request pipeline.
-app.MapGrpcService<GreeterService>();
+app.MapGrpcService<HubService>();
 
 app.Run();

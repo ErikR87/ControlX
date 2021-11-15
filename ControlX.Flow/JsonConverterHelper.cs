@@ -18,6 +18,8 @@ public static class JsonConverterHelper
         registry.RegisterType<TestAction>();
         registry.RegisterType<FTPAction>();
         registry.RegisterType<MoveFileAction>();
+        registry.RegisterType<GreetingAction>();
+        registry.RegisterType<FileTransferAction>();
 
         return options;
     }

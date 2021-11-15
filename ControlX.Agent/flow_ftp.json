@@ -1,0 +1,10 @@
+{
+  "_t": "Automate",
+  "Actions": [
+    {
+      "_t": "GreetingAction",
+      "Name": "$SftpFile.FullName"
+    }
+  ],
+  "Step": 0
+}

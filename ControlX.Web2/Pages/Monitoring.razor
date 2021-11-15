@@ -1,0 +1,83 @@
+﻿@page "/Monitor"
+@using ControlX.Insights.Model
+@inject HttpClient Http
+
+<h3>Monitoring</h3>
+
+<fieldset>
+    <legend>Agents</legend>
+    <div class="list-group list-group-horizontal">
+        @if(agents != null)
+        {
+            @foreach(var agent in agents)
+            {
+                var active = selectedAgent == agent ? "active" : "";
+                var className = $"list-group-item {active}";
+        
+                <button @onclick="() => HandleAgentSelect(agent)" class=@className aria-current="true">@agent</button>
+            }
+        }
+            
+    </div>
+</fieldset>
+
+
+<table class="table">
+    <thead>
+        <th>Timestamp</th>
+        <th>Job</th>
+        <th>Message</th>
+    </thead>
+    <tbody>
+        @if(logs != null)
+        {
+            @foreach(var log in logs.Where(x => x.AppRoleInstance == selectedAgent))
+            {
+                var c = "";
+
+                switch (log.SeverityLevel)
+                {
+                    case 1:
+                        c = "table-success";
+                        break;
+                    case 2:
+                        c = "table-warning";
+                        break;
+                    case 3:
+                        c = "table-danger";
+                        break;
+                }
+
+                <tr class=@c>
+                    <td>@log.TimeGenerated.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                    <td>@log.Scope?.Split('.').Last()</td>
+                    <td>@log.Message</td>
+                </tr>
+            }
+        }
+        
+    </tbody>
+    
+</table>
+
+@code {
+    private LogObject[]? logs;
+    private IEnumerable<string> agents;
+    private string selectedAgent = "";
+
+    protected async override Task OnInitializedAsync()
+    {
+        logs = await Http.GetFromJsonAsync<LogObject[]>("api/Insights");
+
+        if(logs != null)
+        {
+            agents = logs.Select(x => x.AppRoleInstance).Distinct();
+            selectedAgent = agents.FirstOrDefault();
+        }
+    }
+
+    private void HandleAgentSelect(string agent)
+    {
+        selectedAgent = agent;
+    }
+}

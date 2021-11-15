@@ -4,14 +4,28 @@
 
 <h3>Monitoring</h3>
 
+<fieldset>
+    <legend>Agents</legend>
+    <div class="list-group list-group-horizontal">
+        @foreach(var agent in agents)
+        {
+            var active = selectedAgent == agent ? "active" : "";
+            var className = $"list-group-item {active}";
+        
+            <button @onclick="() => HandleAgentSelect(agent)" class=@className aria-current="true">@agent</button>
+        }
+    </div>
+</fieldset>
+
+
 <table class="table">
     <thead>
-        <th>Agent</th>
         <th>Timestamp</th>
+        <th>Category</th>
         <th>Message</th>
     </thead>
     <tbody>
-        @foreach(var log in logs)
+        @foreach(var log in logs.Where(x => x.AppRoleInstance == selectedAgent))
         {
             var c = "";
 
@@ -29,8 +43,8 @@
             }
 
             <tr class=@c>
-                <td>@log.AppRoleInstance</td>
                 <td>@log.TimeGenerated.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                <td>@log.CategoryName</td>
                 <td>@log.Message</td>
             </tr>
         }
@@ -40,9 +54,22 @@
 
 @code {
     private LogObject[]? logs;
+    private IEnumerable<string> agents;
+    private string selectedAgent = "";
 
     protected async override Task OnInitializedAsync()
     {
         logs = await Http.GetFromJsonAsync<LogObject[]>("api/Insights");
+
+        if(logs != null)
+        {
+            agents = logs.Select(x => x.AppRoleInstance).Distinct();
+            selectedAgent = agents.FirstOrDefault();
+        }
+    }
+
+    private void HandleAgentSelect(string agent)
+    {
+        selectedAgent = agent;
     }
 }

@@ -1,22 +1,25 @@
 using ControlX.Flow.Core;
+using ControlX.Hub.Contract;
 using Microsoft.ApplicationInsights;
 
 namespace ControlX.Agent.FileWatcher;
 
-public class Worker : BackgroundService
+public class FileWatcherWorker : BackgroundService
 {
-    private readonly ILogger<Worker> _logger;
+    private readonly ILogger<FileWatcherWorker> _logger;
+    private readonly IHubService _hubService;
     private readonly IConfiguration _configuration;
     private readonly FileWatcherConfig _fileWatcherConfig;
     private readonly IList<FileSystemWatcher> _watchers = new List<FileSystemWatcher>();
 
-    public Worker(ILogger<Worker> logger, IConfiguration configuration)
+    public FileWatcherWorker(ILogger<FileWatcherWorker> logger, IHubService hubService, IConfiguration configuration)
     {
         _logger = logger;
+        _hubService = hubService;
         _configuration = configuration;
         _fileWatcherConfig = new FileWatcherConfig();
         _configuration.GetSection("FileWatcher").Bind(_fileWatcherConfig);
-        InitFileWatchers(_fileWatcherConfig);
+        InitFTPWatchers(_fileWatcherConfig);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -25,6 +28,7 @@ public class Worker : BackgroundService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
+
                 await Task.Delay(1000, stoppingToken);
             }
         } catch (Exception ex)
@@ -34,17 +38,17 @@ public class Worker : BackgroundService
 
     }
 
-    public void InitFileWatchers(FileWatcherConfig config)
+    public void InitFTPWatchers(FileWatcherConfig config)
     {
         
         if(config.Worker != null)
             foreach(var worker in config.Worker)
                 _watchers.Add(
-                    InitFileWatcher(worker)
+                    InitFTPWatcher(worker)
                 );
     }
 
-    public FileSystemWatcher InitFileWatcher(WorkerConfig config)
+    public FileSystemWatcher InitFTPWatcher(FileWatcherWorkerConfig config)
     {
         if (config.Path == null)
             throw new NullReferenceException();
@@ -76,14 +80,14 @@ public class Worker : BackgroundService
         return watcher;
     }
 
-    private void OnCreated(object sender, FileSystemEventArgs e, WorkerConfig config)
+    private void OnCreated(object sender, FileSystemEventArgs e, FileWatcherWorkerConfig config)
     {
         _logger.LogInformation($"Event file created: {e.FullPath}");
 
         // Execute flow instance
         try
         {
-            Automate.Execute(config.Flow, _logger, sender, e).Wait();
+            Automate.Execute(config.Flow, _logger, _hubService, sender, e).Wait();
         } 
         catch (Exception ex)
         {
