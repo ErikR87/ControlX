@@ -7,13 +7,17 @@
 <fieldset>
     <legend>Agents</legend>
     <div class="list-group list-group-horizontal">
-        @foreach(var agent in agents)
+        @if(agents != null)
         {
-            var active = selectedAgent == agent ? "active" : "";
-            var className = $"list-group-item {active}";
+            @foreach(var agent in agents)
+            {
+                var active = selectedAgent == agent ? "active" : "";
+                var className = $"list-group-item {active}";
         
-            <button @onclick="() => HandleAgentSelect(agent)" class=@className aria-current="true">@agent</button>
+                <button @onclick="() => HandleAgentSelect(agent)" class=@className aria-current="true">@agent</button>
+            }
         }
+            
     </div>
 </fieldset>
 
@@ -21,33 +25,37 @@
 <table class="table">
     <thead>
         <th>Timestamp</th>
-        <th>Category</th>
+        <th>Job</th>
         <th>Message</th>
     </thead>
     <tbody>
-        @foreach(var log in logs.Where(x => x.AppRoleInstance == selectedAgent))
+        @if(logs != null)
         {
-            var c = "";
-
-            switch (log.SeverityLevel)
+            @foreach(var log in logs.Where(x => x.AppRoleInstance == selectedAgent))
             {
-                case 1:
-                    c = "table-success";
-                    break;
-                case 2:
-                    c = "table-warning";
-                    break;
-                case 3:
-                    c = "table-danger";
-                    break;
-            }
+                var c = "";
 
-            <tr class=@c>
-                <td>@log.TimeGenerated.ToString("dd.MM.yyyy HH:mm:ss")</td>
-                <td>@log.CategoryName</td>
-                <td>@log.Message</td>
-            </tr>
+                switch (log.SeverityLevel)
+                {
+                    case 1:
+                        c = "table-success";
+                        break;
+                    case 2:
+                        c = "table-warning";
+                        break;
+                    case 3:
+                        c = "table-danger";
+                        break;
+                }
+
+                <tr class=@c>
+                    <td>@log.TimeGenerated.ToString("dd.MM.yyyy HH:mm:ss")</td>
+                    <td>@log.Scope?.Split('.').Last()</td>
+                    <td>@log.Message</td>
+                </tr>
+            }
         }
+        
     </tbody>
     
 </table>

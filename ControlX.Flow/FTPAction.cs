@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 
 namespace ControlX.Flow.Core;
 
@@ -101,7 +102,17 @@ public class FTPAction : FlowAction<FTPAction>, IFTPAction
     {
         using (var file = new FileStream(SourceFile, FileMode.Open))
         {
-            var fileName = SourceFile.Split('\\').Last();
+            string fileName = null;
+
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                fileName = SourceFile.Split('/').Last();
+            }
+            else
+            {
+                fileName = SourceFile.Split('\\').Last();
+            }
+
             client.Connect();
             client.UploadFile(file, Path + fileName, null);
         }

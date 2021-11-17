@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\ControlX.Hub\ControlX.Hub.csproj" />
+    <ProjectReference Include="..\ControlX.Hub.Contract\ControlX.Hub.Contract.csproj" />
   </ItemGroup>
 
 </Project>

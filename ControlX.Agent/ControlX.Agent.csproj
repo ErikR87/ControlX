@@ -22,6 +22,7 @@
     <PackageReference Include="Grpc.Net.Client" Version="2.40.0" />
     <PackageReference Include="Microsoft.ApplicationInsights.WorkerService" Version="2.19.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.Systemd" Version="6.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.ApplicationInsights" Version="2.19.0" />
     <PackageReference Include="protobuf-net.Grpc" Version="1.0.152" />
     <PackageReference Include="protobuf-net.Grpc.ClientFactory" Version="1.0.152" />

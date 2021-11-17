@@ -3,6 +3,7 @@ using ControlX.Hub.Contract;
 using ProtoBuf.Grpc.ClientFactory;
 
 IHost host = Host.CreateDefaultBuilder(args)
+    .UseSystemd()
     .ConfigureServices(services =>
     {
         services.AddLogging(builder =>
@@ -11,7 +12,7 @@ IHost host = Host.CreateDefaultBuilder(args)
         });
         services.AddCodeFirstGrpcClient<IHubService>(o =>
         {
-            o.Address = new Uri("https://localhost:8000");
+            o.Address = new Uri("https://controlx-hub-dev.azurewebsites.net");
         });
         services.AddHostedService<ControlX.Agent.HubClient.HubClient>();
         services.AddHostedService<ControlX.Agent.FileWatcher.FileWatcherWorker>();

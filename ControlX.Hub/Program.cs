@@ -13,6 +13,8 @@ builder.Services.AddRazorPages();
 builder.Services.AddCodeFirstGrpc();
 builder.Services.AddSingleton<LogService>();
 
+//builder.WebHost.UseKestrel();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
