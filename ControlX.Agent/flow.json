@@ -10,6 +10,11 @@
       "Agent": "localhost:8000",
       "FilePath": "$FileSystemEventArgs.FullPath",
       "NewFileName": "$FileSystemEventArgs.Name"
+    },
+    {
+      "_t": "HttpAction",
+      "Host": "localhost",
+      "Method": 0
     }
   ],
   "Step": 0

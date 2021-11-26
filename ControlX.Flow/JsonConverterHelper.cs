@@ -20,6 +20,7 @@ public static class JsonConverterHelper
         registry.RegisterType<MoveFileAction>();
         registry.RegisterType<GreetingAction>();
         registry.RegisterType<FileTransferAction>();
+        registry.RegisterType<HttpAction>();
 
         return options;
     }
